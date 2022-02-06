@@ -7,13 +7,8 @@ def run():
     This program controls a Fan by using PWM.
     The Fan will probably not work below 40% dutycycle, so that is the
     fan PWM baseline. The maximum PWM cannot be more than 100%.
-
-    When the cpu temperature is above 50 'C, we will start to cool.
-    When the cpu reaches 70 degrees, we would like to run the fan at max speed.
-
-    To make the PWM related to the temperature, strip the actual temp from the
-    cool baseline, multiply the delta with 3 and add that to the the baseline
-    PWM to get 100% at 70 degrees.
+    
+    NOTE: this is only a test stub, not the full program
 
     I have selected a PWM frequency of 100Hz to avoid high frequency noise, but
     you can change that.
@@ -51,7 +46,6 @@ def run():
     pigpio.exceptions = True # tip from Joan
     pi.set_mode(FAN_PIN, pigpio.OUTPUT)
        # fatal exceptions back on
-    pigpio.exceptions = True
     
     pi.set_PWM_frequency(FAN_PIN,100000) # 8000
     pi.set_PWM_range(FAN_PIN, 100)
