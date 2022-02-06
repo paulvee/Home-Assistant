@@ -2,7 +2,7 @@
 @time_trigger
 
 def run():
-    task.unique("rpi_cpu_fan_test") # make sure we only have one instance running.
+    task.unique("rpi_cpu_fan_test_gpio") # make sure we only have one instance running.
     '''
     This program controls a Fan by using PWM.
     The Fan will probably not work below 40% dutycycle, so that is the
