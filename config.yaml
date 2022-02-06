@@ -1,4 +1,4 @@
 apps:
-  #rpi_cpu_fan_test.py
+  #rpi_cpu_fan_test_gpio.py
   rpi_cpu_fan_test_pigpio.py
 
