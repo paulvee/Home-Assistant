@@ -5,9 +5,9 @@ def run_fan():
     '''
     This program controls a Fan by using PWM.
     The Fan will probably not work with a small dutycycle, so I use the
-    fan PWM baseline that I experimented with. I use a 40mm Noctua NF-A4x10 5V 
-    fan, and it stalls with a pwm below 55. The positive lead of the fan is 
-    connected to 5V. The GPIO pin is going to the Gate of a MOSFET and that drives
+    fan PWM baseline that I experimented with. I use a 3-wire 40mm 5V Noctua fan,
+    and it stalls with a pwm below 20. The positive lead of the fan is 
+    connected to 5V. The GPIO pin is going to the Base of a transistor and that drives
     the negative power lead of the fan. I use my own developed "hat" PCB.
 
     This script will start at boot/restart time of HA, and will run forever unless
@@ -15,7 +15,7 @@ def run_fan():
     I do have a sensor card activated in HA so I can monitor the cpu temperature 
     over time.
 
-    When the cpu temperature is above 50 'C, we will start to cool.
+    The fan will always run, but we'll start to force cooling above 50 degrees C.
     When the cpu reaches 70 degrees, the fan will run at max speed.
 
     To make the PWM related to the temperature, strip the actual temp from the
@@ -44,7 +44,7 @@ def run_fan():
 
     DEBUG = True
 
-    FAN_PIN = 17 # GPIO 17 : using software PWM it can be any GPIO pin
+    FAN_PIN = 17 # GPIO 17 : using software PWM, it can be any GPIO pin
    
     #create instance of pigpio class
     pi = pigpio.pi()
@@ -57,17 +57,17 @@ def run_fan():
     pigpio.exceptions = True # can be turned off (set to False) after testing
     pi.set_mode(FAN_PIN, pigpio.OUTPUT)
     
-    pi.set_PWM_frequency(FAN_PIN,1000) # 1000Hz
+    pi.set_PWM_frequency(FAN_PIN,10000) # 8,000Hz
     pi.set_PWM_range(FAN_PIN, 100) # set the maximum range to 100
     if DEBUG: log.info(f"frequency : {pi.get_PWM_frequency(FAN_PIN)}" ) # report the set frequency
-    pi.set_PWM_dutycycle(FAN_PIN, 100) # kick-start it so we know it runs.
-    task.sleep(5) # force it to run for 5 seconds
+    if DEBUG: log.info(f"kick-start the fan for 2 seconds" ) # so we know it works
+    pi.set_PWM_dutycycle(FAN_PIN, 80)
+    task.sleep(2) # run it for 2 seconds
 
-    cool_baseline = 50      # start cooling from this temp in Celcius onwards
-    pwm_baseline = 55       # lowest PWM to keep the fan running without stalling
+    cool_baseline = 50      # start force cooling from this temp in Celcius onwards
+    pwm_baseline = 20       # lowest PWM to keep the fan running without stalling
     factor = 3              # multiplication factor
     max_pwm = 100           # maximum PWM value
-    fan_running = False     # helps to kick-start the fan so it does not stall
 
     try:
         while True:
@@ -89,21 +89,13 @@ def run_fan():
             if DEBUG: log.info(f"cpu temp : {cpu_temp}")
 
             if cpu_temp < cool_baseline :
-                pi.set_PWM_dutycycle(FAN_PIN, 0) # turn the Fan off
-                fan_running = False
+                pi.set_PWM_dutycycle(FAN_PIN, 20) # lowest speed
 
             if cpu_temp > cool_baseline :
-                if fan_running :
-                    duty_cycle = round(((cpu_temp-cool_baseline)*factor)+pwm_baseline, None)
-                    if duty_cycle > max_pwm : duty_cycle = max_pwm # max = 100% -> don't need it with pigpio
-                else:
-                    # kick-start the fan for a duration of 1 cycle (30 seconds)
-                    if DEBUG: log.info(f"kick-starting the fan")
-                    duty_cycle = 90
-                    fan_running = True
+                duty_cycle = round(((cpu_temp-cool_baseline)*factor)+pwm_baseline, None)
                 if DEBUG: log.info(f"duty_cycle : {duty_cycle}")
                 pi.set_PWM_dutycycle(FAN_PIN, duty_cycle) # update the pwm value for the fan
-
+            # test the temperature every 30 seconds
             task.sleep(30) # task.sleep is needed instead of time.sleep() which is a blocking call
 
     except: # just in case...
