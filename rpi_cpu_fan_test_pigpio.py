@@ -57,23 +57,6 @@ def run():
     pi.set_PWM_range(FAN_PIN, 100)
     log.info(f"frequency : {pi.get_PWM_frequency(4)}" )
 
-    '''
-    # Here is a bit of a kludge. When a new instance of this script is started, HA will terminate the running instance.
-    # However, because we use the task.sleep() function, it will only terminate the running process when that has passed.
-    # In the meantime, this script will have started, but the GPIO ports are still assigned at that point.
-    # The kludge is to try to assign it after we initiated the GPIO with setup, catch the exception,
-    # and try it again. (you can't just use GPIO(cleanup) before actually using it)
-    try:
-        Fan = GPIO.PWM(FAN_PIN, 100)    # create object Fan for PWM on port 17 at 100 Hertz
-    except:
-        log.info("GPIO exception - port still in use, trying again...")
-        GPIO.cleanup()  # release the used port(s)
-        GPIO.setwarnings(True)
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(FAN_PIN, GPIO.OUT)
-        Fan = GPIO.PWM(FAN_PIN, 100)
-    '''
-
     log.info("starting with pwm 0...")
     pi.set_PWM_dutycycle(FAN_PIN, 0) # PWM off   # start Fan with 0 percent duty cycle (off)
     #GPIO.output(FAN_PIN, 0) # use this to test the "normal" GPIO functionality
