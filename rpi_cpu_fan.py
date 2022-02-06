@@ -4,11 +4,11 @@
 def run_fan():
     '''
     This program controls a Fan by using PWM.
-    The Fan will probably not work below 50% dutycycle, so that is the
-    fan PWM baseline. I use a 40mm Noctua NF-A4x10 5V fan, and it stalls with 
-    a pwm below 50. The positive lead of the fan is connected to 5V. The GPIO 
-    pin is going to the Gate of a MOSFET and that drives
-    the negative power lead of the fan. I use my own developed "hat" board.
+    The Fan will probably not work with a small dutycycle, so I use the
+    fan PWM baseline that I experimented with. I use a 40mm Noctua NF-A4x10 5V 
+    fan, and it stalls with a pwm below 55. The positive lead of the fan is 
+    connected to 5V. The GPIO pin is going to the Gate of a MOSFET and that drives
+    the negative power lead of the fan. I use my own developed "hat" PCB.
 
     This script will start at boot/restart time of HA, and will run forever unless
     reloaded with a newer version or a touch. There are no HA GUI elements.
@@ -64,7 +64,7 @@ def run_fan():
     task.sleep(5) # force it to run for 5 seconds
 
     cool_baseline = 50      # start cooling from this temp in Celcius onwards
-    pwm_baseline = 50       # lowest PWM to keep the fan running without stalling
+    pwm_baseline = 55       # lowest PWM to keep the fan running without stalling
     factor = 3              # multiplication factor
     max_pwm = 100           # maximum PWM value
     fan_running = False     # helps to kick-start the fan so it does not stall
