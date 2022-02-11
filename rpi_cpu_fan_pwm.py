@@ -24,9 +24,6 @@ def run_fan():
     cool baseline, multiply the delta with 3 and add that to the the baseline
     PWM to get 100% at 70 degrees.
 
-    I have selected a PWM frequency of 20KHz which is just below the recommended
-    frequency of Noctua fans. Unfortunately, the next frequency step is 40KHz, 
-    and that is too high.
     '''
     log.info(f"pyscript: starting run_fan")
     task.unique("run_fan") # make sure we only have one instance running.
@@ -61,7 +58,7 @@ def run_fan():
     pigpio.exceptions = True # can be turned off (set to False) after testing
     pi.set_mode(FAN_PIN, pigpio.OUTPUT)
     
-    pi.set_PWM_frequency(FAN_PIN, 200000) # 20KHz
+    pi.set_PWM_frequency(FAN_PIN, 200000) # 20KHz - it will be 8KHz with the standard deamon setting
     pi.set_PWM_range(FAN_PIN, 100) # set the maximum range to 100
     log.info(f"fan pwm frequency : {pi.get_PWM_frequency(FAN_PIN)}" ) # report the set frequency
     if DEBUG: log.info(f"kick-start the fan for 2 seconds" ) # so we know it works
