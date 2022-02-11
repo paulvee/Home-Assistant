@@ -12,6 +12,5 @@ I created a folder in config with the name pyscript and put all the related file
 
 Most of what I found and needed to do is listed as comments in the code.
 
-There are two test scripts, one for RPi.GPIO, that does not support PWM but otherwise works, and one script for the pigpio library that does support PWM.
-I also added my own script (rpi_cpu_fan.py) that I am using now and is fully working using the pigpio library.
+
 
