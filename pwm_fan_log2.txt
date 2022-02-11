@@ -1,4 +1,4 @@
-
+This is a partial log of the RPi case-4-fan with the colling temperature set at 55 degrees C.
 
 2022-02-11 12:05:11 INFO (MainThread) [custom_components.pyscript.file.rpi_cpu_fan_pwm.run_fan] cpu temp : 56.4  duty_cycle : 24
 2022-02-11 12:05:41 INFO (MainThread) [custom_components.pyscript.file.rpi_cpu_fan_pwm.run_fan] cpu temp : 56.0  duty_cycle : 23
