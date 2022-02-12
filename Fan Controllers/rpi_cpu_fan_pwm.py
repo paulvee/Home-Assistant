@@ -2,15 +2,14 @@
 @time_trigger # start it automatically after a boot or (re)load
 
 def run_fan():
-    '''
+     '''
     This program controls a PWM capable Fan.
   
     I use the fan that is an option for the RPi-4 enclosure, an 18mm ADDA with the
     partnumber AD0205DX-K59. It has three leads, VCC(red), GND(black) and 
     the PWM input (blue) 
     The required GPIO pin to drive the PWM signal can be any free pin, but I used
-    the TxD0/GPIO-14 pin. This pin is pulled-up by default and that will, by default,
-    drive the fan to full speed at boot. The Fan will not run below a PWM of 20.
+    the GPIO-17 pin. The Fan will not run below a PWM of 20.
 
     This script will start at boot/restart time of HA, and will run forever unless
     reloaded with a newer version or a touch. There are no HA GUI elements.
@@ -24,6 +23,9 @@ def run_fan():
     cool baseline, multiply the delta with 3 and add that to the the baseline
     PWM to get 100% at 70 degrees.
 
+    I have selected a PWM frequency of 8KHz. This is the maximum because the pigpiod
+    is invoked by default which is with the 5us sample speed. You can't seem to add options
+    with the invocation.
     '''
     log.info(f"pyscript: starting run_fan")
     task.unique("run_fan") # make sure we only have one instance running.
@@ -50,26 +52,23 @@ def run_fan():
     like GPIO-17.
     Because we use software PWM, you can use any of the GPIO pins.
     '''
-    FAN_PIN = 14 # TxD0/GPIO 14 : this is a pulled-up pin.
+    FAN_PIN = 17 # GPIO 17 : using software PWM, it can be any GPIO pin
    
     #create instance of pigpio class
     '''
-    Because we are using a special command invovation for the pigpio daemon, do not install it 
-    as an add-on in Home Assistant because you cannot add parameters.  If you do, the speed 
-    will be 5us and the maximum PWM frequency will be 8KHz.
+    Make sure you install the pigpio daemon first from the add-on store
     '''
     pi = pigpio.pi()
     if not pi.connected:
-        log.info("pigpio daemon not running...") 
-        os.system("pigpiod -s 1") # start the daemon with 1uS to allow 20KHz
-                        # If you change an argument, you have to reload the daemon
-        task.sleep(1) # give it some time and try again
-        pi = pigpio.pi()
+        log.info("Required pigpio daemon is not running...") 
+        log.info("Add this integration from the add-on store - exiting...")
+        exit()
+
 
     pigpio.exceptions = True # can be turned off (set to False) after testing
     pi.set_mode(FAN_PIN, pigpio.OUTPUT)
     
-    pi.set_PWM_frequency(FAN_PIN, 200000) # 20KHz - it will be 8KHz with the standard deamon setting
+    pi.set_PWM_frequency(FAN_PIN, 8000) # the maximum with the standard deamon setting
     pi.set_PWM_range(FAN_PIN, 100) # maximum range= 100 if you find this too loud, reduce it
     log.info(f"fan pwm frequency : {pi.get_PWM_frequency(FAN_PIN)}" ) # report the set frequency
     if DEBUG: log.info(f"kick-start the fan for 2 seconds" ) # so we know it works
