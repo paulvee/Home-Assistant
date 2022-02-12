@@ -44,9 +44,20 @@ def run_fan():
 
     DEBUG = False
 
-    FAN_PIN = 14 # TxD0/GPIO 14 : using software PWM, it can be any GPIO pin
+    '''
+    Using one of the pulled-up GPIO pins will force the fan speed at maximum until this
+    script starts to execute. Keep that in mind. Otherwise, select a universal GPIO pin 
+    like GPIO-17.
+    Because we use software PWM, you can use any of the GPIO pins.
+    '''
+    FAN_PIN = 14 # TxD0/GPIO 14 : this is a pulled-up pin.
    
     #create instance of pigpio class
+    '''
+    Because we are using a special command invovation for the pigpio daemon, do not install it 
+    as an add-on in Home Assistant because you cannot add parameters.  If you do, the speed 
+    will be 5us and the maximum PWM frequency will be 8KHz.
+    '''
     pi = pigpio.pi()
     if not pi.connected:
         log.info("pigpio daemon not running...") 
@@ -59,7 +70,7 @@ def run_fan():
     pi.set_mode(FAN_PIN, pigpio.OUTPUT)
     
     pi.set_PWM_frequency(FAN_PIN, 200000) # 20KHz - it will be 8KHz with the standard deamon setting
-    pi.set_PWM_range(FAN_PIN, 100) # set the maximum range to 100
+    pi.set_PWM_range(FAN_PIN, 100) # maximum range= 100 if you find this too loud, reduce it
     log.info(f"fan pwm frequency : {pi.get_PWM_frequency(FAN_PIN)}" ) # report the set frequency
     if DEBUG: log.info(f"kick-start the fan for 2 seconds" ) # so we know it works
     pi.set_PWM_dutycycle(FAN_PIN, 70)
@@ -68,7 +79,6 @@ def run_fan():
     cool_baseline = 55      # start force cooling from this temp in Celcius onwards
     pwm_baseline = 20       # lowest PWM to keep the fan running without stalling
     factor = 3              # multiplication factor
-    max_pwm = 100           # maximum PWM value
 
     try:
         while True:
