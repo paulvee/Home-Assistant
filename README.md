@@ -2,7 +2,7 @@
 Information and scripts for Home Assistent
 
 This is using the HACS/Pyscript add-in to test things out.
-It provides an almost full Python envorinment that can be used together with the Home Assistant environment.
+It provides an almost full Python environment that can be used together with the Home Assistant environment.
 
 https://github.com/custom-components/pyscript
 I used the GUI install, first HACS, then Pyscript.
