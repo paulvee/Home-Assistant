@@ -56,14 +56,19 @@ def run_fan():
    
     #create instance of pigpio class
     '''
-    Make sure you install the pigpio daemon first from the add-on store
+    Make sure you install the pigpio daemon first from the HACS add-on store
+    If it's not there, it may crash the HA GUI (happened to me)
+    If that happens, put a # in front of the filename so it will no longer start
     '''
-    pi = pigpio.pi()
-    if not pi.connected:
-        log.info("Required pigpio daemon is not running...") 
-        log.info("Add this integration from the add-on store - exiting...")
+    try:
+        pi = pigpio.pi()
+        if not pi.connected:
+            log.info("Required pigpio daemon is not running...") 
+            log.info("Add this integration from the add-on store - exiting...")
+            exit()
+    except: # see if we can gracefully exit without crashing the HA GUI
+        if DEBUG: log.info(f"Exception : found no pigpiod")
         exit()
-
 
     pigpio.exceptions = True # can be turned off (set to False) after testing
     pi.set_mode(FAN_PIN, pigpio.OUTPUT)
