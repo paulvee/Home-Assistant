@@ -28,7 +28,6 @@ def run_fan():
     with the invocation.
     '''
     log.info(f"pyscript: starting run_fan")
-    task.unique("run_fan") # make sure we only have one instance running.
 
     import subprocess
     import shlex
