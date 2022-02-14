@@ -111,6 +111,20 @@ def run_fan():
                 duty_cycle = round(((cpu_temp-cool_baseline)*factor)+pwm_baseline, None)
                 if DEBUG: log.info(f"cpu temp : {cpu_temp}  duty_cycle : {duty_cycle}")
                 pi.set_PWM_dutycycle(FAN_PIN, duty_cycle) # update the pwm value for the fan
+               
+                '''
+                Create an entity in the HA configuration.yaml so that we can
+                update the value from here and use HA to take care of the rest
+                sensor:
+                    - platform: template
+                        sensors:
+                            fan_pwd:
+                                value_template: 20 # the entity must have a key
+                                friendly_name: "fan pwd"
+                                unit_of_measurement: "% rpm"
+                '''
+                sensor.fan_pwd = duty_cycle # this is how we assign the value
+
             # test the temperature every 30 seconds
             task.sleep(30) # task.sleep is needed instead of time.sleep() which is a blocking call
 
