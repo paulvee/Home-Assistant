@@ -55,9 +55,10 @@ def run_fan():
    
     #create instance of pigpio class
     '''
-    Make sure you install the pigpio daemon first from the HACS add-on store
-    If it's not there, it may crash the HA GUI (happened to me)
-    If that happens, put a # in front of the filename so it will no longer start
+    Make sure you install the pigpio daemon first from the add-on store
+    If it's not there, it may crash the HA Web-GUI (happened to me)
+    To fix that issue, use access to the RPi and put an # in front of the 
+    filename in /config/pyscript to deactivate the execution at boot
     '''
     try:
         pi = pigpio.pi()
